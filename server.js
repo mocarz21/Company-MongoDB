@@ -2,10 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const mongoClient = require('mongodb').MongoClient;
 
-const app = express();
-
-
-
 const employeesRoutes = require('./routes/employees.routes');
 const departmentsRoutes = require('./routes/departments.routes');
 const productsRoutes = require('./routes/products.routes');
@@ -15,8 +11,10 @@ mongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUni
     console.log(err);
   }
   else {
-    const db = client.db('companyDB');  
     console.log('Successfully connected to the database');
+
+    const db = client.db('companyDB');  
+    const app = express();
 
     app.use(cors());
     app.use(express.json());
@@ -24,6 +22,7 @@ mongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUni
 
     app.use((req, res, next) => {
       req.db=db
+      next();
     });
 
     app.use('/api', employeesRoutes);
